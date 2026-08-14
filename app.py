@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import os
-import pickle
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
@@ -13,12 +12,7 @@ st.set_page_config(page_title="CreditWise Loan Predictor", page_icon="💰", lay
 
 @st.cache_resource
 def load_trained_model():
-    model_path = os.path.join(os.path.dirname(__file__), "loan_approval_pipeline.pkl")
-    if os.path.exists(model_path):
-        with open(model_path, "rb") as f:
-            return pickle.load(f)
-    
-    # Train pipeline on the dataset if pickled file is not present
+    # Train pipeline directly on the dataset for 100% version compatibility across environments
     data_path = os.path.join(os.path.dirname(__file__), "loan_approval_data.csv")
     df = pd.read_csv(data_path)
     df = df.dropna(subset=["Loan_Approved"])
@@ -44,7 +38,7 @@ def load_trained_model():
     pipeline.fit(X, y)
     return pipeline
 
-# Load model
+# Load model (cached in memory)
 pipeline = load_trained_model()
 
 st.title("💰 CreditWise Loan Approval Predictor")
